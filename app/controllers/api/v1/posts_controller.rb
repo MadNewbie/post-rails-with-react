@@ -1,10 +1,10 @@
-class PostsController < ApplicationController
+class Api::V1::PostsController < ApplicationController
   before_action :set_post, only: %i[ show update destroy ]
 
   # GET /posts
   def index
-    # @posts = Post.order(created_at: :desc)
-    @posts = Post.all()
+    @posts = Post.order(created_at: :desc)
+    # @posts = Post.all()
 
     render json: @posts
   end

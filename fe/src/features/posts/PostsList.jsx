@@ -1,6 +1,6 @@
 // API_URL comes from .env.development file
 import React, {useState, useEffect} from "react";
-import { API_URL } from "../../../constants";
+import { deletePost as deletePostService, fetchAllPosts } from "../../services/postService";
 import { Link } from "react-router-dom";
 
 function PostsList() {
@@ -12,16 +12,10 @@ function PostsList() {
     useEffect(()=>{
         async function loadPosts() {
             try {
-                const response = await fetch(`${API_URL}/posts`);
-                if (response.ok) {
-                    const json = await response.json()
-                    setPosts(json)
-                } else {
-                    throw response
-                }
+                const data = await fetchAllPosts()
+                setPosts(data)
             } catch (e) {
                 setError('An error occured. Awkward..')
-                console.log('An error occured: ', e)
             } finally {
                 setLoading(false)
             }
@@ -31,17 +25,11 @@ function PostsList() {
 
     const deletePost = async(id) => {
         try {
-            // DELETE request to http://localhost:3000/api/v1/posts/:id
-            const response = await fetch(`${API_URL}/posts/${id}`, {
-                method: "DELETE",
-            })
-            if (response.ok) {
-                setPosts(posts.filter((post) => post.id !== id))
-            } else {
-                throw response
-            }
+            await deletePostService(id)
+            setPosts(posts.filter(post => post.id !== id))
+            // setPosts((prevPosts) => prevPosts.filter((post) => post.id !== id))
         } catch (error) {
-            console.error(error)
+            console.error("Failed to delete the post: ",error)
         }
     }
 
